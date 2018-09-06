@@ -1,25 +1,7 @@
-"""Script to get information about synchronization.
-
-A simple script to read a mcd file from MEA record and get the
+r"""
+A simple script to read a mcd from MEA record and get the
 sincronization times for each displayed frame on projector. This script
 create 4 txt file with different information about the synchronization.
-
-Parameters
-----------
-
-mcdFile : str
-    path to .mcd file
-expName : str
-    Name of experiment
-mcdChannel : int
-    number of channel where is the analog signal
-    in .mcd file
-realFps: float
-    real fps used for projector. Look at the log file
-    and check this number. Ex. 59.7694
-outputFolder : str
-    directory path to save files
-
 
 Returns
 -------
@@ -34,70 +16,69 @@ total_duration : int
     total number of points in the record
 event_list : DataFrame
     list of events in start_end_frames
-
-
-Examples
---------
-
-python syncAnalyzer_script.py \
- --mcdFile ../data/raw_data/2016-04-11/2016-04-11_analog.mcd \
- --expName '2016-04-11' \
- --mcdChannel 0 \
- --outputFolder ../data/sync/2016-04-11/ \
- --realFps 59.7596
 """
+
+
 import argparse
-from pathlib import Path
 
 from mealib.preprocessing import Sync
 from mealib.utils import checkDirectory
 
 
-parser = argparse.ArgumentParser(
-    prog='syncAnalyaer_script.py',
-    description='''A simple script to read a mcd from MEA record and
-            get the sincronization times for each displayed frame on
-            projector. This script create 4 txt file with different
-            information about the synchronization.''',
-    epilog="""example:
-            python syncAnalyzer_script.py
-            --mcdFile ../data/raw_data/2016-04-11/2016-04-11_analog.mcd
-            --expName '2016-04-11'
-            --mcdChannel 0
-            --outputFolder ../data/sync/
-            --realFps 59.7596
-           """,
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+def get_sync(exp_name, real_fps, mcd_file, mcd_channel, output_folder):
+    """Execute the normal rutine to get the syncronization"""
+    sync_data = Sync(exp_name, real_fps)
+    sync_data.read_mcd(mcd_file)
+    sync_data.showEntities()
 
-parser.add_argument('--mcdFile', help='MCD file path with the analog signal ',
-                    type=str, required=True)
-parser.add_argument('--expName', help='Name of the output file',
-                    type=str, required=True)
-parser.add_argument('--mcdChannel', help='Number of the analog channel in MCD\
-                    file to recovery synchronization signal', type=int,
-                    default=0)
-parser.add_argument('--realFps', help='Real fps used by projector. Check in\
-                    the log file of experiment', type=float, required=True)
-parser.add_argument('--outputFolder', help='Output folder',
-                    type=str, default='')
+    sync_data.analyzer(mcd_channel)
 
-args = parser.parse_args()
+    sync_data.create_events()
+    sync_data.add_repeated()
 
-if args.outputFolder[-1] == '/':
-    output_folder = args.outputFolder+args.expName+'/'
-else:
-    output_folder = args.outputFolder+'/'+args.expName+'/'
-checkDirectory(output_folder)
+    sync_data.save_analyzed(output_folder)
+    sync_data.save_events(output_folder)
+    sync_data.close_file()
 
-sync_data = Sync(args.expName, args.realFps)
-sync_data.read_mcd(args.mcdFile)
-sync_data.showEntities()
 
-sync_data.analyzer(args.mcdChannel)
+def main():
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=EPILOG,
+        )
+    parser.add_argument(
+        "mcdfile", type=str,
+        help='MCD file path with the analog signal ',
+        )
+    parser.add_argument(
+        "expname", type=str,
+        help='Name of the output file',
+        )
+    parser.add_argument(
+        'fps', type=float,
+        help='Real fps used by projector. Check inthe log file of experiment',
+        )
+    parser.add_argument(
+        '-c', dest='mcd_channel', type=int, default=0,
+        help='Number of the analog channel in MCD file. Default 0',
+        )
+    parser.add_argument(
+        '-o', dest='output_folder', type=str, default='',
+        help='Directory path to save files. Default ./',
+        )
+    args = parser.parse_args()
 
-sync_data.create_events()
-sync_data.add_repeated()
+    if args.output_folder[-1] == '/':
+        output_folder = args.output_folder + args.expname+'/'
+    else:
+        output_folder = args.output_folder + '/' + args.expname+'/'
 
-sync_data.save_analyzed(output_folder)
-sync_data.save_events(output_folder)
-sync_data.close_file()
+    checkDirectory(output_folder)
+
+    get_sync(args.expname, args.fps, args.mcdfile, args.mcd_channel,
+             output_folder)
+
+
+if __name__ == "__main__":
+    main()
