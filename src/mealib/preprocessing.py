@@ -1,41 +1,15 @@
-"""
-Implementing of classes and function to prepare raw data.
-"""
-from pathlib import Path
+"""Implementing of classes and function to prepare raw data."""
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import neuroshare as ns
 
-
-def check_attr(attr):
-    def check_attr_func(func):
-        def function_wrapper(*args, **kwargs):
-            if hasattr(args[0], attr):
-                func(*args, **kwargs)
-            else:
-                if attr == 'data':
-                    print('MCD file is not loaded, use read_mcd() method.')
-                else:
-                    print('The attribute does not exist.')
-        return function_wrapper
-    return check_attr_func
-
-
-def check_dir(func):
-    def function_wrapper(*args, **kwargs):
-        out_path = Path(args[1])
-        if out_path.is_dir():
-            func(dir_name)
-        else:
-            print('Error in source folder. Check it')
-    return function_wrapper
+from mealib.decorators import check_attr, check_dir
 
 
 class Sync:
-    """
-    Get the sinchronization times from a record.
+    """Get the sinchronization times from a record.
 
     Class provide a complete enviroment to explore, cumpute and
     recovery sincronization signal in a record using a SamplingInteface
@@ -45,22 +19,25 @@ class Sync:
     levels to mark different frames.
     The following image show a simple example how to work it.
     https://tinyurl.com/ydxlvds9
-
-    Parameters
-    ----------
-    exp_name : str
-        Name of experiment to analyse
-    real_fps : float
-        The real refresh rate used by the projector. Pleas check log
-        file to get this number.
     """
+
     def __init__(self, exp_name, real_fps=59.7596):
+        """
+        Parameters
+        ----------
+        exp_name : str
+            The name of the experiment
+        real_fps : float
+            The real refresh rate used by the projector. Pleas check
+            log file to get this number.
+        """
         self.exp_name = exp_name
         self.real_fps = real_fps
 
     def __repr__(self):
-        output_repr = 'Sync for experiment {} showed to {} [fps]'
-        return output_repr.format(self.exp_name, self.real_fps)
+        exp_name = self.exp_name
+        real_fps = self.real_fps
+        return "Sync for -{}- experiment".format(exp_name)
 
     def read_mcd(self, mcd_file):
         """Load mcd file to be analyze.
@@ -73,6 +50,14 @@ class Sync:
         self.data = ns.File(mcd_file)
         time_resolution = self.data.metadata_raw['TimeStampResolution']
         self.sample_rate = 1/time_resolution
+
+    @check_attr('data')
+    def showEntities(self):
+        """Show all channel in mcd file"""
+        print('Entities in MCD file.\nindex:  \t label:  \t entity_type: ')
+        for kidx, entity in enumerate(self.data.entities):
+            kvalues = [kidx, entity.label, entity.entity_type]
+            print '{:04d}: {} type: {:d}'.format(*kvalues)
 
     @check_dir
     def load_analyzed(self, src_folder):
@@ -87,21 +72,21 @@ class Sync:
         src_folder : str
             path of directory with result files.
         """
+
         file_name = 'start_end_frames_' + self.exp_name + '.txt'
         self.start_end_frame = np.loadtxt(
-            out_path.joinpath(file_name), dtype='int32')
+            src_folder+file_name, dtype='int32')
         file_name = 'repeated_frames_' + self.exp_name + '.txt'
         self.repeted_start_frames = np.loadtxt(
-            out_path.joinpath(file_name), dtype='int32')
+            src_folder+file_name, dtype='int32')
         file_name = 'total_duration_' + self.exp_name + '.txt'
         self.total_duration, self.sample_rate = np.loadtxt(
-            out_path.joinpath(file_name), dtype='int32')
+            src_folder+file_name, dtype='int32')
 
-    @check_dir
     def load_events(self, source_file):
         """Read csv file with event for a experiment.
 
-        Update event_list atribute from csv file.
+        Update event_list atribute from csv file as dataframe.
 
         Parameters
         ----------
@@ -110,29 +95,33 @@ class Sync:
         """
         self.event_list = pd.read_csv(source_file)
 
-    @give_attr('data')
-    def showEntities(self):
-        """Show all channel in mcd file"""
-        print('Entities in MCD file.\nindex:  \t label:  \t type: ')
-        for kidx, entity in enumerate(self.data.entities):
-            kvalues = (kidx, entity.label, entity.entity_type)
-            print('%04d: "%s" type: %d' % kvalues)
-
-    def get_raw_data(self, channel):
+    @check_attr('data')
+    def get_raw_data(self, channel, start=0, windows=-1):
         """ Load all raw data in a specific channel
 
         Parameters
         ----------
         channel : int
             number of channel to get raw data in mcd file
-        """
-        if hasattr(self, 'data'):
-            entity = self.data
-            entity_data, analog_time, dur = entity.entities[channel].get_data()
-            return entity_data, analog_time, dur
-        else:
-            print('MCD file is not loaded, use read_mcd() method.')
 
+        Return
+        ----------
+        entity_data : array
+            Record values in a channel [samples].
+        analog_time : array
+            Time of Record values in a channel [s].
+        dur : int
+            Duration of record in a channel [samples]
+
+        Example
+        ----------
+        data, time, dur = sync.get_raw_data(channel)
+        """
+        entity = self.data.entities[channel]
+        entity_data, analog_time, dur = entity.get_data(start, windows)
+        return entity_data, analog_time, dur
+
+    @check_attr('data')
     def plotWindow(self, channel, start_point, window):
         """Plot analog signal of syncronization in a specific time.
 
@@ -148,15 +137,13 @@ class Sync:
         window : int
             number of points to plot
         """
-        if hasattr(self, 'data'):
-            entity = self.data.entities[channel]
-            analog_data, analog_time, dur = entity.get_data(start_point, window)
-            plt.figure()
-            plt.plot(analog_time-analog_time[0], analog_data)
-            plt.show()
-        else:
-            print('MCD file is not loaded, use read_mcd() method.')
+        entity = self.data.entities[channel]
+        analog_data, analog_time, dur = entity.get_data(start_point, window)
+        plt.figure()
+        plt.plot(analog_time-analog_time[0], analog_data)
+        plt.show()
 
+    @check_attr('data')
     def analyzer(self, channel):
         """Get the sinchronization times from MCD file.
 
@@ -172,16 +159,16 @@ class Sync:
             channel number where is the analog signal in .mcd file. Use
             showEntities() to check number.
 
-        Attribute update
+        Update
         ----------
-        start_end_frames : int 2d array
+        start_end_frames : attr <- int 2d array
             array with a start and end point for each frame in analog
             signal
-        repeted_frames : int id array
+        repeted_frames : attr <- int id array
             array points where the next frame it the repetition of this
-        total_duration : int
+        total_duration : attr <- int
             total number of points in record
-        sample_rate : int
+        sample_rate : attr <- int
             sample rate of record
 
         ToDo
@@ -190,15 +177,12 @@ class Sync:
         because now use search point to point where are the end of
         pulse. Try using a find_peak algorithm.
         """
-        """
-        Implementation
-        ----------
-            1) each frame has a color bar for defaul in bottom of projector
-            2) Analog signas has a pulse for each frame, the end of this pulse
-               is when a frame was recieved by projector.
-            3) this moment is the start of presentation frame
-            4) the end of the last frame must be infer
-        """
+        # Implementation
+        # 1) each frame has a color bar for defaul in bottom of projector
+        # 2) Analog signas has a pulse for each frame, the end of this pulse
+        #    is when a frame was recieved by projector.
+        # 3) this moment is the start of presentation frame
+        # 4) the end of the last frame must be infer
         real_fps = self.real_fps
         analog_data, analog_time, dur = self.get_raw_data(channel)
         # Threshold to delete the basal noise in volts.
@@ -251,12 +235,14 @@ class Sync:
         self.repeted_start_frames = start_frame[repeted_frame_point]
         self.total_duration = len(analog_data)
 
+    @check_attr('start_end_frame')
     def create_events(self):
-        """ Create a list of events of sincronization.
+        """Create a list of events of sincronization.
 
-         Use start_end time from each frame to detect a sequence of
-         images (event) and create a dataframe with all event, with
-         start, end, duration, number of frame and time to next event.
+         Use start time from each frame to detect a sequence of
+         images (event) and create a dataframe with all event.
+         This dataframe has start, end, duration, number of frame and
+         time to next event.
         This image show a example of 2 events.
         https://tinyurl.com/ydxlvds9
         """
@@ -295,7 +281,6 @@ class Sync:
                                        - event_list['start_event']
         event_list['event_duration_seg'] = event_list['event_duration'] \
                                            / self.sample_rate
-
         event_list['inter_event_duration'] = event_list['start_next_event'] \
                                              - event_list['end_event']
         event_list.loc[len(event_list)-1, 'inter_event_duration'] = 0
@@ -305,6 +290,7 @@ class Sync:
         event_list['repetition_name'] = ''
         self.event_list = event_list
 
+    @check_attr('event_list', 'repeted_start_frames')
     def add_repeated(self):
         """Add repeated frames to event list.
 
@@ -324,6 +310,7 @@ class Sync:
                 self.repeted_start_frames[filter_rep])
 
     @check_dir
+    @check_attr('start_end_frame')
     def save_analyzed(self, output_folder, stype='txt'):
         """Save attributes generated by analyzer method.
 
@@ -340,21 +327,22 @@ class Sync:
         if stype == 'txt':
             template_name = '{}_' + self.exp_name + '.txt'
             file_path = template_name.format('start_end_frames')
-            np.savetxt(out_path.joinpath(file_path),
+            np.savetxt(output_folder+file_path,
                        self.start_end_frame, fmt='%d',
                        header='start_frame [points], end_frame [points]')
             file_path = template_name.format('repeated_frames')
-            np.savetxt(out_path.joinpath(file_path),
+            np.savetxt(output_folder+file_path,
                        self.repeted_start_frames, fmt='%d',
                        header='repeated_frame [points]')
             file_path = template_name.format('total_duration')
             header_dur = 'total_duration [point], sample_rate [points]'
             array_dur = [[self.total_duration], [self.sample_rate]]
-            np.savetxt(out_path.joinpath(file_path), np.array(array_dur).T,
+            np.savetxt(output_folder+file_path, np.array(array_dur).T,
                        fmt='%d', header=header_dur)
         elif stype == 'hdf5':
             pass
 
+    @check_attr('event_list')
     @check_dir
     def save_events(self, output_folder):
         """Save event list in a csv file.
@@ -369,6 +357,7 @@ class Sync:
         template_name = output_folder + '{}_' + self.exp_name + '_.csv'
         self.event_list.to_csv(template_name.format('event_list'), index=False)
 
+    @check_attr('start_end_frame', 'event_list')
     @check_dir
     def create_separated_sync(self, output_folder):
         """Split syncronization times for each event.
@@ -399,118 +388,3 @@ class Sync:
             self.data.close()
         else:
             print('First need open a mcd file.')
-
-
-def correct_checkerboard(sync_file, repeated_file, outputFile, stim_file,
-                         mat_version='v7.3'):
-    """Create a new stimulus with all repeated frames.
-
-    Take a checkerboar stimulus and add all repeated frame found in a
-    experiment and create a new file.
-
-    Parameters
-    ----------
-
-
-    Note
-    ----------
-    When a file is saved in vertion 7.3 by Matlab, it create a .mat
-    file with a HDF5 format.
-
-    Matlab use automaticly v7.3 when file has more than 100.000.000
-    values, for example checkerboar
-    31 [blocks]*31 [blocks] *72000 [img] use v7.0
-    31 [blocks]*31 [blocks] *108000 [img]  use v7.3
-    35 [blocks]*35 [blocks] *72000 [img]  use v7.3
-
-    Todo
-    ----------
-    Check what is the correct order of dimentions in mat file and
-    python. scipy.io.loadmat read matfile in inverse order to access
-    array, ej. shape(*.mat) = (35,35,3,72000) and python should be
-    (72000,3,35,35).
-    """
-
-    # Load data
-    if mat_version == 'v7.3':
-        import h5py
-        with h5py.File(stim_file, 'r') as stim_raw:
-            stim_raw_shape = np.array(stim_raw['stim'].shape)
-            fix_dim = np.arange(stim_raw['stim'].ndim)
-            fix_dim[-2:] = fix_dim[-2:][::-1]
-            stim = np.empty(tuple(stim_raw_shape[fix_dim]), dtype=np.uint8)
-            stim_raw['stim'].read_direct(stim, np.s_[...])
-            stim = np.transpose(stim, fix_dim)
-            print('Shape for checkerboar file: {}'.format(stim.shape))
-    else:
-        from scipy.io import loadmat
-        stim = loadmat(stim_file)
-
-    sync_frame = np.loadtxt(sync_file)
-    repetared_frame = np.loadtxt(repeated_file)
-
-    repeated = np.where(np.isin(sync_frame[:, 0], repetared_frame))[0]
-    n_repeated = len(repeated)
-
-    # Find repeated position an number of repetitions
-    if n_repeated > 1:
-        rep_pointer = 0
-        counter = {repeated[rep_pointer]: 1}
-        for krep in range(1, len(repeated)):
-            if (repeated[krep] - repeated[krep-1]) > 1:
-                counter[repeated[krep]] = 1
-                rep_pointer = krep
-            else:
-                counter[repeated[rep_pointer]] += 1
-
-    elif n_repeated == 1:
-        counter = {repeated[0]: 1}
-    else:
-        counter = {}
-
-    # Correct of repeated to get the original stim repeated
-    sort_keys = [k for k in counter.keys()]
-    sort_keys.sort()
-    if len(counter) > 1:
-        corrected_repeated = {sort_keys[0]: counter[sort_keys[0]]}
-        corrected_sum = counter[sort_keys[0]]
-        for krep in range(1, len(sort_keys)):
-            kkey = sort_keys[krep]
-            corrected_repeated[kkey-corrected_sum] = counter[kkey]
-            corrected_sum += counter[kkey]
-    elif len(counter) == 1:
-        corrected_repeated = counter
-        corrected_sum = counter[sort_keys[0]]
-    else:
-        corrected_repeated = counter
-        corrected_sum = 0
-
-    stim_shape = stim.shape
-    stim_shape = list(stim_shape)
-    new_stim_shape = stim_shape.copy()
-    new_stim_shape[0] += corrected_sum
-
-    new_stim = np.empty(tuple(new_stim_shape), dtype=np.uint8)
-
-    range_stim = [k for k in corrected_repeated]
-    range_stim = np.array([[0] + range_stim, range_stim + [stim_shape[0]]])
-    range_stim = range_stim.transpose()
-
-    if 0 not in corrected_repeated:
-        corrected_repeated[0] = 0
-
-    delay = 0
-    for kstart, kend in range_stim:
-        delay_rep = corrected_repeated[kstart]
-        new_start, new_end = (kstart+delay, kstart+delay+delay_rep)
-        new_stim[new_start:new_end, ...] = stim[kstart:kstart+1, ...]
-        delay += delay_rep
-        new_stim[kstart+delay:kend+delay, ...] = stim[kstart:kend, ...]
-
-        print(kstart, kend, delay)
-    del stim, sync_frame, repetared_frame
-
-    with h5py.File(outputFile, 'w') as f:
-        f.create_dataset('checkerboard', data=new_stim, dtype=np.uint8,
-                         chunks=tuple([1]+new_stim_shape[1:]),
-                         compression='gzip', shuffle=False)
