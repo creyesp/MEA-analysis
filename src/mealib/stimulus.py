@@ -44,7 +44,7 @@ def correct_checkerboard(sync_file, repeated_file, outputFile, stim_file,
             stim = np.empty(tuple(stim_raw_shape[fix_dim]), dtype=np.uint8)
             stim_raw['stim'].read_direct(stim, np.s_[...])
             stim = np.transpose(stim, fix_dim)
-            print('Shape for checkerboar file: {}'.format(stim.shape))
+            print 'Shape for checkerboar file: {}'.format(stim.shape)
     else:
         from scipy.io import loadmat
         stim = loadmat(stim_file)

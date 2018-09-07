@@ -52,7 +52,7 @@ class Sync:
         self.sample_rate = 1/time_resolution
 
     @check_attr('data')
-    def showEntities(self):
+    def show_entities(self):
         """Show all channel in mcd file"""
         print('Entities in MCD file.\nindex:  \t label:  \t entity_type: ')
         for kidx, entity in enumerate(self.data.entities):
@@ -122,7 +122,7 @@ class Sync:
         return entity_data, analog_time, dur
 
     @check_attr('data')
-    def plotWindow(self, channel, start_point, window):
+    def plot_window(self, channel, start_point, window):
         """Plot analog signal of syncronization in a specific time.
 
         Take a window time of the analog signal in MCD file and plot
