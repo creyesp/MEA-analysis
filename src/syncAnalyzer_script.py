@@ -29,7 +29,7 @@ def get_sync(exp_name, real_fps, mcd_file, mcd_channel, output_folder):
     """Execute the normal rutine to get the syncronization"""
     sync_data = Sync(exp_name, real_fps)
     sync_data.read_mcd(mcd_file)
-    sync_data.showEntities()
+    sync_data.show_entities()
 
     sync_data.analyzer(mcd_channel)
 
@@ -45,7 +45,6 @@ def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=EPILOG,
         )
     parser.add_argument(
         "mcdfile", type=str,
