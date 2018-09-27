@@ -35,9 +35,7 @@ class Sync:
         self.real_fps = real_fps
 
     def __repr__(self):
-        exp_name = self.exp_name
-        real_fps = self.real_fps
-        return "Sync for -{}- experiment".format(exp_name)
+        return '{}({},{})'.format(self.__class__, self.exp_name, self.real_fps)
 
     def read_mcd(self, mcd_file):
         """Load mcd file to be analyze.
@@ -95,14 +93,17 @@ class Sync:
         """
         self.event_list = pd.read_csv(source_file)
 
-    @check_attr('data')
     def get_raw_data(self, channel, start=0, windows=-1):
         """ Load all raw data in a specific channel
 
         Parameters
         ----------
         channel : int
-            number of channel to get raw data in mcd file
+            number of channel to get raw data in mcd file.
+        start : int
+            Start point to get data.
+        windows : int
+            Number of point (window) after start point to get data.
 
         Return
         ----------
@@ -117,9 +118,12 @@ class Sync:
         ----------
         data, time, dur = sync.get_raw_data(channel)
         """
-        entity = self.data.entities[channel]
-        entity_data, analog_time, dur = entity.get_data(start, windows)
-        return entity_data, analog_time, dur
+        try:
+            entity = self.data.entities[channel]
+            entity_data, analog_time, dur = entity.get_data(start, windows)
+            return entity_data, analog_time, dur
+        except AttributeError, err:
+            print err, ', please load a mcd file.'
 
     @check_attr('data')
     def plot_window(self, channel, start_point, window):
@@ -183,16 +187,14 @@ class Sync:
         #    is when a frame was recieved by projector.
         # 3) this moment is the start of presentation frame
         # 4) the end of the last frame must be infer
-        real_fps = self.real_fps
         analog_data, analog_time, dur = self.get_raw_data(channel)
         # Threshold to delete the basal noise in volts.
         thresh_volts = 0.151111112
 
         # Number of points to consider a pulse as a valid frame
         wide_pulse = 50
-        file_data = self.data
-        min_distanceFrames = np.floor(real_fps/file_data.time_stamp_resolution)
-        max_distanceFrames = np.ceil(real_fps/file_data.time_stamp_resolution)
+        min_distanceFrames = np.floor(self.sample_rate/self.real_fps)
+        max_distanceFrames = np.ceil(self.sample_rate/self.real_fps)
 
         # Get sync times
         filter_amp = analog_data > thresh_volts
@@ -221,8 +223,9 @@ class Sync:
 
         # The finish time in a sequence of images is not register and
         # it's necesary to extrapolar this point
-        end_frame[end_event_pos] = start_frame[end_event_pos] \
-                                   + min_distanceFrames
+        end_frame[end_event_pos] = (start_frame[end_event_pos]
+                                    + min_distanceFrames
+                                    )
         end_frame[-1] = start_frame[-1] + min_distanceFrames
 
         sync_point = np.asarray(sync_point)
@@ -276,16 +279,25 @@ class Sync:
             'n_frames': n_frames_full, 'start_next_event': start_next_event})
 
         event_list = event_list[
-            ['n_frames', 'start_event', 'end_event', 'start_next_event']]
-        event_list['event_duration'] = event_list['end_event'] \
-                                       - event_list['start_event']
-        event_list['event_duration_seg'] = event_list['event_duration'] \
-                                           / self.sample_rate
-        event_list['inter_event_duration'] = event_list['start_next_event'] \
-                                             - event_list['end_event']
+            ['n_frames', 'start_event', 'end_event', 'start_next_event']
+            ]
+        event_list['event_duration'] = (
+            event_list['end_event']
+            - event_list['start_event']
+            )
+        event_list['event_duration_seg'] = (
+            event_list['event_duration']
+            / self.sample_rate
+            )
+        event_list['inter_event_duration'] = (
+            event_list['start_next_event']
+            - event_list['end_event']
+            )
         event_list.loc[len(event_list)-1, 'inter_event_duration'] = 0
-        event_list['inter_event_duration_seg'] = \
-            event_list['inter_event_duration'] / self.sample_rate
+        event_list['inter_event_duration_seg'] = (
+            event_list['inter_event_duration']
+            / self.sample_rate
+            )
         event_list['protocol_name'] = ''
         event_list['repetition_name'] = ''
         self.event_list = event_list
@@ -302,8 +314,9 @@ class Sync:
         self.event_list['#repeated_frames'] = 0
         events = self.event_list[['start_event', 'end_event']].values
         for kidx, (kstart, kend) in enumerate(events):
-            filter_rep = (self.repeted_start_frames >= kstart) \
-                        * (self.repeted_start_frames <= kend)
+            filter_rep = ((self.repeted_start_frames >= kstart)
+                          * (self.repeted_start_frames <= kend)
+                          )
             self.event_list.loc[kidx, 'repeated_frames'] = str(
                 self.repeted_start_frames[filter_rep])
             self.event_list.loc[kidx, ['#repeated_frames']] = len(
