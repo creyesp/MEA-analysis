@@ -5,7 +5,7 @@ import h5py
 
 
 def correct_checkerboard(sync_file, repeated_file, outputFile, stim_file,
-                         mat_version='v7.3'):
+                         mat_v73):
     """Create a new stimulus with all repeated frames.
 
     Take a checkerboar stimulus and add all repeated frame found in a
@@ -35,8 +35,13 @@ def correct_checkerboard(sync_file, repeated_file, outputFile, stim_file,
     """
 
     # Load data
-    if mat_version == 'v7.3':
-        import h5py
+    try:
+        from scipy.io import loadmat
+        stim = loadmat(stim_file)
+        stim = stim['stim']
+        stim = np.transpose(stim, np.arange(stim.ndim)[::-1])
+        print 'Shape for checkerboar file: {}'.format(stim.shape)
+    except NotImplementedError:
         with h5py.File(stim_file, 'r') as stim_raw:
             stim_raw_shape = np.array(stim_raw['stim'].shape)
             fix_dim = np.arange(stim_raw['stim'].ndim)
@@ -45,9 +50,8 @@ def correct_checkerboard(sync_file, repeated_file, outputFile, stim_file,
             stim_raw['stim'].read_direct(stim, np.s_[...])
             stim = np.transpose(stim, fix_dim)
             print 'Shape for checkerboar file: {}'.format(stim.shape)
-    else:
-        from scipy.io import loadmat
-        stim = loadmat(stim_file)
+    except ValueError as verror:
+        verror('There are problems with {} file'.format(stimMini))
 
     sync_frame = np.loadtxt(sync_file)
     repetared_frame = np.loadtxt(repeated_file)
@@ -74,6 +78,8 @@ def correct_checkerboard(sync_file, repeated_file, outputFile, stim_file,
     # Correct of repeated to get the original stim repeated
     sort_keys = [k for k in counter.keys()]
     sort_keys.sort()
+    print 'Repeated frame {}'.format(sort_keys)
+
     if len(counter) > 1:
         corrected_repeated = {sort_keys[0]: counter[sort_keys[0]]}
         corrected_sum = counter[sort_keys[0]]
@@ -90,12 +96,13 @@ def correct_checkerboard(sync_file, repeated_file, outputFile, stim_file,
 
     stim_shape = stim.shape
     stim_shape = list(stim_shape)
-    new_stim_shape = stim_shape.copy()
+    new_stim_shape = list(stim_shape)
     new_stim_shape[0] += corrected_sum
 
     new_stim = np.empty(tuple(new_stim_shape), dtype=np.uint8)
 
     range_stim = [k for k in corrected_repeated]
+    range_stim.sort()
     range_stim = np.array([[0] + range_stim, range_stim + [stim_shape[0]]])
     range_stim = range_stim.transpose()
 
@@ -109,8 +116,6 @@ def correct_checkerboard(sync_file, repeated_file, outputFile, stim_file,
         new_stim[new_start:new_end, ...] = stim[kstart:kstart+1, ...]
         delay += delay_rep
         new_stim[kstart+delay:kend+delay, ...] = stim[kstart:kend, ...]
-
-        print(kstart, kend, delay)
     del stim, sync_frame, repetared_frame
 
     with h5py.File(outputFile, 'w') as f:
