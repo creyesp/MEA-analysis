@@ -4,8 +4,7 @@ import numpy as np
 import h5py
 
 
-def correct_checkerboard(sync_file, repeated_file, outputFile, stim_file,
-                         mat_v73):
+def correct_checkerboard(sync_file, repeated_file, outputFile, stim_file):
     """Create a new stimulus with all repeated frames.
 
     Take a checkerboar stimulus and add all repeated frame found in a
