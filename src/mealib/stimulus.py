@@ -8,29 +8,27 @@ def correct_checkerboard(sync_file, repeated_file, outputFile, stim_file):
     """Create a new stimulus with all repeated frames.
 
     Take a checkerboar stimulus and add all repeated frame found in a
-    experiment and create a new file.
+    experiment and create a new stim file.
 
     Parameters
     ----------
+    sync_file : str
+        path to syncronozacion file with start and end time for
+        checkerboar.
+    repeated_file :
+        path to file with all repeated times of experiment.
+    outputFile :
+        path to save new file.
+    stim_file :
+        path to original stim file (.mat)
 
 
     Note
     ----------
-    When a file is saved in vertion 7.3 by Matlab, it create a .mat
-    file with a HDF5 format.
-
-    Matlab use automaticly v7.3 when file has more than 100.000.000
-    values, for example checkerboar
-    31 [blocks]*31 [blocks] *72000 [img] use v7.0
-    31 [blocks]*31 [blocks] *108000 [img]  use v7.3
-    35 [blocks]*35 [blocks] *72000 [img]  use v7.3
-
-    Todo
-    ----------
-    Check what is the correct order of dimentions in mat file and
-    python. scipy.io.loadmat read matfile in inverse order to access
+    scipy.io.loadmat read matfile in inverse order to access
     array, ej. shape(*.mat) = (35,35,3,72000) and python should be
-    (72000,3,35,35).
+    (72000,3,35,35), for this reason the output file keep python
+    format.
     """
 
     # Load data
