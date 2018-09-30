@@ -20,15 +20,17 @@ def correct_checkerboard(sync_file, repeated_file, outputFile, stim_file):
     outputFile :
         path to save new file.
     stim_file :
-        path to original stim file (.mat)
+        path to original stim file (.mat).
 
 
     Note
     ----------
-    scipy.io.loadmat read matfile in inverse order to access
-    array, ej. shape(*.mat) = (35,35,3,72000) and python should be
-    (72000,3,35,35), for this reason the output file keep python
-    format.
+    scipy.io.loadmat read matfile in mantain the matlab axis order
+    to access array, ej. shape (y,x,channel,frame) = (35,35,3,72000)
+    and python should be (frame,y,x,channel) = (72000,35,35,3), for
+    this reason the output file keep python format.
+    https://eli.thegreenplace.net/2015/memory-layout-of-multi-dimensional-arrays/
+    http://scikit-image.org/docs/dev/user_guide/numpy_images.html
     """
 
     # Load data
@@ -36,20 +38,19 @@ def correct_checkerboard(sync_file, repeated_file, outputFile, stim_file):
         from scipy.io import loadmat
         stim = loadmat(stim_file)
         stim = stim['stim']
-        stim = np.transpose(stim, np.arange(stim.ndim)[::-1])
-        print 'Shape for checkerboar file: {}'.format(stim.shape)
+        # Scikit-image convention
+        (row, col, ch, pln) = (0, 1, 2, 3)
+        stim = np.transpose(stim, (pln, row, col, ch))
     except NotImplementedError:
         with h5py.File(stim_file, 'r') as stim_raw:
-            stim_raw_shape = np.array(stim_raw['stim'].shape)
-            fix_dim = np.arange(stim_raw['stim'].ndim)
-            fix_dim[-2:] = fix_dim[-2:][::-1]
-            stim = np.empty(tuple(stim_raw_shape[fix_dim]), dtype=np.uint8)
+            (pln, ch, col, row) = (0, 1, 2, 3)
+            stim = np.empty(stim_raw['stim'].shape, dtype=np.uint8)
             stim_raw['stim'].read_direct(stim, np.s_[...])
-            stim = np.transpose(stim, fix_dim)
-            print 'Shape for checkerboar file: {}'.format(stim.shape)
+            stim = np.transpose(stim, (pln, row, col, ch))
     except ValueError as verror:
-        verror('There are problems with {} file'.format(stimMini))
+        verror('There are problems with {} file'.format(stim_file))
 
+    print 'Shape for checkerboar file: {}'.format(stim.shape)
     sync_frame = np.loadtxt(sync_file)
     repetared_frame = np.loadtxt(repeated_file)
 
