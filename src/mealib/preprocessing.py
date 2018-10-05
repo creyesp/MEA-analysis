@@ -28,7 +28,7 @@ class Sync:
         exp_name : str
             The name of the experiment
         real_fps : float
-            The real refresh rate used by the projector. Pleas check
+            The real refresh rate used by the projector. Please check
             log file to get this number.
         """
         self.exp_name = exp_name
@@ -71,15 +71,14 @@ class Sync:
             path of directory with result files.
         """
 
-        file_name = 'start_end_frames_' + self.exp_name + '.txt'
-        self.start_end_frame = np.loadtxt(
-            src_folder+file_name, dtype='int32')
-        file_name = 'repeated_frames_' + self.exp_name + '.txt'
-        self.repeted_start_frames = np.loadtxt(
-            src_folder+file_name, dtype='int32')
-        file_name = 'total_duration_' + self.exp_name + '.txt'
-        self.total_duration, self.sample_rate = np.loadtxt(
-            src_folder+file_name, dtype='int32')
+        file_name = src_folder + 'start_end_frames_' + self.exp_name + '.txt'
+        self.start_end_frame = np.loadtxt(file_name, dtype='int32')
+        file_name = src_folder + 'repeated_frames_' + self.exp_name + '.txt'
+        self.repeted_start_frames = np.loadtxt(file_name, dtype='int32')
+        file_name = src_folder + 'total_duration_' + self.exp_name + '.txt'
+        general_information = np.loadtxt(file_name, dtype='int32')
+        self.total_duration = general_information[0]
+        self.sample_rate = general_information[1]
 
     def load_events(self, source_file):
         """Read csv file with event for a experiment.
@@ -254,13 +253,14 @@ class Sync:
         diff_time = np.diff(np.concatenate(
             (np.array([0]), start_frame, np.array([self.total_duration]))))
         # Max dist between frames
-        dis_frame = np.ceil(self.sample_rate/self.real_fps)
-        filter_event = diff_time > dis_frame
+        max_dist_frame = np.ceil(self.sample_rate/self.real_fps)
+        min_dist_frame = np.floor(self.sample_rate/self.real_fps)
+        filter_event = diff_time > max_dist_frame
         end_event_pos = np.where(filter_event)[0]
 
         # Select start and end time for each event
         start_event = start_frame[end_event_pos[:-1]]
-        end_event = start_frame[end_event_pos[1:] - 1] + dis_frame
+        end_event = end_frame[end_event_pos[1:] - 1]
         n_frames = end_event_pos[1:] - end_event_pos[:-1]
 
         # Add bound condition
