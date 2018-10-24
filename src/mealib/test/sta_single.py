@@ -4,6 +4,7 @@ sys.path.append(os.path.realpath('..'))
 
 import h5py
 import numpy as np
+import matplotlib.pyplot as plt
 
 from mealib.analysis import sta
 
@@ -26,6 +27,7 @@ with h5py.File(sorting_file) as sorting:
     timestamp = sorting['/spiketimes/'+unit_name][...]
     ts_checkerboard = sta.get_times_for_sta(timestamp, start_sync, end_sync)
 
-sta_array = sta.single_sta(stim_matrix, ts_checkerboard, bins_stim)
+sta_array = sta.single_sta(stim_matrix, ts_checkerboard, bins_stim,
+                           pre_frame=30, post_frame=0)
 fig, ax = sta.plot_sta(sta_array, unit_name)
 plt.show()

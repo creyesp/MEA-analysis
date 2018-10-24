@@ -145,8 +145,8 @@ def init_multi_sta(stim, stim_shape):
     GLOBAL_STIM['stim'] = stim
     GLOBAL_STIM['stim_shape'] = stim_shape
 
-def run_multi_sta(stim_file, bins_stim, spiketimes):
-    '''Run sta in multiprocessing
+def run_multi_sta(stim_file, bins_stim, spiketimes, pre_frame=30, post_frame=0):
+    """Run sta in multiprocessing.
 
     Parameter
     ---------
@@ -156,7 +156,7 @@ def run_multi_sta(stim_file, bins_stim, spiketimes):
         times of start and end of stim
     spiketimes: dict
         spiketimes to compute sta
-    '''
+    """
     freeze_support()
     stim, stim_shape = load_stim_multi(stim_file)
 

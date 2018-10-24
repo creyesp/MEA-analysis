@@ -32,9 +32,10 @@ for key in list_name[:10]:
 fspiketimes.close()
 
 
-result = sta.run_multi_sta(stim_file, bins_stim, spiketimes)
+result = sta.run_multi_sta(stim_file, bins_stim, spiketimes,
+                           pre_frame=18, post_frame=0)
 print('Results (pool):\n', len(result))
 
 for (kname, ksta) in result:
     fig, ax = sta.plot_sta(ksta, kname)
-    plt.show()
+plt.show()
