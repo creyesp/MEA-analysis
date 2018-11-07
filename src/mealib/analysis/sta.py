@@ -180,6 +180,6 @@ def plot_sta(sta_array, name=''):
         img = axf[kidx].pcolor(kframe, vmin=-max_c, vmax=max_c, cmap='RdBu_r')
         axf[kidx].set_title('frame {}'.format(nframes-kidx-1))
         axf[kidx].set_aspect(1)
-    fig.colorbar(img, ax=ax, orientation='vertical', fraction=.01)
+    fig.colorbar(img, ax=ax, orientation='vertical', fraction=.01, label='Range of stimulu [-1,1]')
     fig.suptitle(name)
     return (fig, ax)
