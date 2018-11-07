@@ -1,4 +1,5 @@
-from mealib.utils import checkDirectory
+'''sync for several exps together'''
+from mealib.utils import check_directory
 from mealib.preprocessing import Sync
 
 # exp = {'MR-0117': 0, 'MR-0118': 0, 'MR-0119': 0, 'MR-0120': 0, 'MR-0121': 0,
@@ -20,8 +21,8 @@ for kexp in exp:
     output_folder = '../data/sync/'+kexp+'/'
     output_folder_event = output_folder = '../data/sync/'+kexp+'/event_list/'
     mcd_channel = exp[kexp]
-    checkDirectory(output_folder)
-    checkDirectory(output_folder_event)
+    check_directory(output_folder)
+    check_directory(output_folder_event)
 
     print('\n'+kexp)
     sync_data = Sync(kexp, real_fps)
