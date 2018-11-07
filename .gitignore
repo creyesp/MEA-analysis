@@ -17,9 +17,13 @@ data/raw_data/*
 data/stim/*
 data/structured_data/*
 data/sync/*
+data/sorting/*
 
 # pyc
 *.pyc
 
 #checkpoints
 *.ipynb_checkpoints*
+
+# mealib3
+src/mealib3/*
