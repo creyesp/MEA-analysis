@@ -14,12 +14,14 @@ from mealib.preprocessing import Sync
 #         'MR-0263':2,
 #         'MR-0263-2':2,
 #         'MR-0264':2}
-exp = {'MR-0242':0}
+# exp = {'2016-04-11': 0, '2016-04-18': 0, 'MR-0227': 0}
+# exp = {'MR-0269': 0, 'MR-0272t1': 0, 'MR-0272t2': 0}
+exp = {'MR-0265': 0}
 real_fps = 59.7607
 for kexp in exp:
     source_folder = '../data/raw_data/'+kexp+'/'+kexp+'_analog.mcd'
     output_folder = '../data/sync/'+kexp+'/'
-    output_folder_event = output_folder = '../data/sync/'+kexp+'/event_list/'
+    output_folder_event = '../data/sync/'+kexp+'/event_list/'
     mcd_channel = exp[kexp]
     check_directory(output_folder)
     check_directory(output_folder_event)
@@ -29,7 +31,6 @@ for kexp in exp:
     sync_data.read_mcd(source_folder)
     sync_data.show_entities()
     sync_data.analyzer(mcd_channel)
-
     sync_data.create_events()
     sync_data.add_repeated()
 
