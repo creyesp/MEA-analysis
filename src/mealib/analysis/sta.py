@@ -170,7 +170,7 @@ def run_multi_sta(stim_file, bins_stim, spiketimes, pre_frame=30, post_frame=0):
 def plot_sta(sta_array, name=''):
     nframes = sta_array.shape[0]
     ncol = 6
-    nrow = nframes/ncol+1 if nframes % ncol else nframes/ncol
+    nrow = nframes//ncol+1 if nframes % ncol else nframes//ncol
     max_c = (np.abs(sta_array)).max()
     fig, ax = plt.subplots(nrow, ncol,
                            sharex=True, sharey=True, figsize=(6, nrow)
