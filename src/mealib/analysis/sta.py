@@ -46,6 +46,7 @@ import matplotlib.pyplot as plt
 #         raise ValueError('It necesary load a stim File')
 #     return estim
 
+
 def load_stim_hdf5(fname, norm=True, channel='g'):
     rgb = {'r': 0, 'g': 1, 'b': 2}
     with h5py.File(fname, 'r') as hdf_file:
@@ -55,6 +56,7 @@ def load_stim_hdf5(fname, norm=True, channel='g'):
     stim_min, stim_max = stim.min(), stim.max()
     stim = ((stim - stim_min) / ((stim_max - stim_min) / 2) - 1)
     return stim
+
 
 def load_stim_multi(fname, norm=True, channel='g'):
     rgb = {'r': 0, 'g': 1, 'b': 2}
@@ -71,11 +73,14 @@ def load_stim_multi(fname, norm=True, channel='g'):
     np.copyto(stim_np, stim_raw)
     return stim, stim_shape
 
+
 def load_spk_txt():
     pass
 
+
 def load_spk_hdf5():
     pass
+
 
 def get_times_for_sta(timestamps, start_sync, end_sync):
     timestamp_filter = timestamps > start_sync
@@ -83,6 +88,7 @@ def get_times_for_sta(timestamps, start_sync, end_sync):
     timestamp_filter = vector_spikes < end_sync
     vector_spikes = vector_spikes[timestamp_filter]
     return vector_spikes
+
 
 def single_sta(stim, timestamps, bins_stim, pre_frame=30, post_frame=0):
     """Compute the Spike Triggered Average for a cell."""
@@ -101,6 +107,7 @@ def single_sta(stim, timestamps, bins_stim, pre_frame=30, post_frame=0):
         sta_array += nspikes*stim[kframe+1-pre_frame:kframe+1+post_frame, :, :]
     sta_array /= spike_in_frames.sum()
     return sta_array
+
 
 def multi_sta(timestamps, bins_stim, pre_frame=30, post_frame=0):
     """Compute the Spike Triggered Average for a cell.
@@ -139,6 +146,7 @@ def multi_sta(timestamps, bins_stim, pre_frame=30, post_frame=0):
     sta_array /= spike_in_frames.sum()
     return (unit_name, sta_array)
 
+
 # A global dictionary storing the variables passed from the initializer.
 GLOBAL_STIM = {}
 def init_multi_sta(stim, stim_shape):
@@ -166,6 +174,7 @@ def run_multi_sta(stim_file, bins_stim, spiketimes, pre_frame=30, post_frame=0):
                        post_frame=0)
     result = pool.map(wrap_sta, spiketimes)
     return result
+
 
 def plot_sta(sta_array, name=''):
     nframes = sta_array.shape[0]
