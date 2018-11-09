@@ -168,11 +168,17 @@ def run_multi_sta(stim_file, bins_stim, spiketimes, pre_frame=30, post_frame=0):
     freeze_support()
     stim, stim_shape = load_stim_multi(stim_file)
 
-    pool = Pool(processes=cpu_count(), initializer=init_multi_sta,
-                initargs=(stim, stim_shape))
-    wrap_sta = partial(multi_sta, bins_stim=bins_stim, pre_frame=30,
-                       post_frame=0)
-    result = pool.map(wrap_sta, spiketimes)
+    # pool = Pool(processes=cpu_count(), initializer=init_multi_sta,
+    #             initargs=(stim, stim_shape))
+    # wrap_sta = partial(multi_sta, bins_stim=bins_stim, pre_frame=pre_frame,
+    #                    post_frame=post_frame)
+    # result = pool.map(wrap_sta, spiketimes)
+
+    wrap_sta = partial(multi_sta, bins_stim=bins_stim, pre_frame=pre_frame,
+                       post_frame=post_frame)
+    with Pool(processes=cpu_count(), initializer=init_multi_sta,
+              initargs=(stim, stim_shape)) as pool:
+        result = pool.map(wrap_sta, spiketimes)
     return result
 
 
