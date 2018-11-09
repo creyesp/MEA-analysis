@@ -182,12 +182,12 @@ def plot_sta(sta_array, name=''):
     nrow = nframes//ncol+1 if nframes % ncol else nframes//ncol
     max_c = (np.abs(sta_array)).max()
     fig, ax = plt.subplots(nrow, ncol,
-                           sharex=True, sharey=True, figsize=(6, nrow)
+                           sharex=True, sharey=True, figsize=(ncol*1.5, nrow*1.5)
                            )
     axf = ax.flatten()
     for kidx, kframe in enumerate(sta_array):
         img = axf[kidx].pcolor(kframe, vmin=-max_c, vmax=max_c, cmap='RdBu_r')
-        axf[kidx].set_title('frame {}'.format(nframes-kidx-1))
+        axf[kidx].set_title('frame {}'.format(nframes-kidx-1), fontsize=6)
         axf[kidx].set_aspect(1)
     fig.colorbar(img, ax=ax, orientation='vertical', fraction=.01,
                  label='Range of stimulu [-1,1]')
