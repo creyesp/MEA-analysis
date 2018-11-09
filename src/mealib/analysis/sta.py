@@ -153,7 +153,9 @@ def init_multi_sta(stim, stim_shape):
     GLOBAL_STIM['stim'] = stim
     GLOBAL_STIM['stim_shape'] = stim_shape
 
-def run_multi_sta(stim_file, bins_stim, spiketimes, pre_frame=30, post_frame=0):
+
+def run_multi_sta(stim_file, bins_stim, spiketimes, pre_frame=30,
+                  post_frame=0):
     """Run sta in multiprocessing.
 
     Parameter
