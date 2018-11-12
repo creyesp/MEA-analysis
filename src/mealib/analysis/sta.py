@@ -105,7 +105,9 @@ def single_sta(stim, timestamps, bins_stim, pre_frame=30, post_frame=0):
     # Valid frames consider itself as reference
     for kframe, nspikes in zip(valid_frames, spike_in_frames):
         sta_array += nspikes*stim[kframe+1-pre_frame:kframe+1+post_frame, :, :]
-    sta_array /= spike_in_frames.sum()
+    if sta_array.any():
+        sta_array /= spike_in_frames.sum()
+
     return sta_array
 
 
@@ -143,7 +145,8 @@ def multi_sta(timestamps, bins_stim, pre_frame=30, post_frame=0):
         start_frame = kframe+1-pre_frame
         end_frame = kframe+1+post_frame
         sta_array += nspikes*stim_matrix[start_frame:end_frame, :, :]
-    sta_array /= spike_in_frames.sum()
+    if sta_array.any():
+        sta_array /= spike_in_frames.sum()
     return (unit_name, sta_array)
 
 
