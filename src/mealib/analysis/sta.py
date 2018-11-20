@@ -46,6 +46,7 @@ import matplotlib.pyplot as plt
 #         raise ValueError('It necesary load a stim File')
 #     return estim
 
+
 def load_stim_hdf5(fname, norm=True, channel='g'):
     rgb = {'r': 0, 'g': 1, 'b': 2}
     with h5py.File(fname, 'r') as hdf_file:
@@ -55,6 +56,7 @@ def load_stim_hdf5(fname, norm=True, channel='g'):
     stim_min, stim_max = stim.min(), stim.max()
     stim = ((stim - stim_min) / ((stim_max - stim_min) / 2) - 1)
     return stim
+
 
 def load_stim_multi(fname, norm=True, channel='g'):
     rgb = {'r': 0, 'g': 1, 'b': 2}
@@ -71,11 +73,14 @@ def load_stim_multi(fname, norm=True, channel='g'):
     np.copyto(stim_np, stim_raw)
     return stim, stim_shape
 
+
 def load_spk_txt():
     pass
 
+
 def load_spk_hdf5():
     pass
+
 
 def get_times_for_sta(timestamps, start_sync, end_sync):
     timestamp_filter = timestamps > start_sync
@@ -83,6 +88,7 @@ def get_times_for_sta(timestamps, start_sync, end_sync):
     timestamp_filter = vector_spikes < end_sync
     vector_spikes = vector_spikes[timestamp_filter]
     return vector_spikes
+
 
 def single_sta(stim, timestamps, bins_stim, pre_frame=30, post_frame=0):
     """Compute the Spike Triggered Average for a cell."""
@@ -99,8 +105,11 @@ def single_sta(stim, timestamps, bins_stim, pre_frame=30, post_frame=0):
     # Valid frames consider itself as reference
     for kframe, nspikes in zip(valid_frames, spike_in_frames):
         sta_array += nspikes*stim[kframe+1-pre_frame:kframe+1+post_frame, :, :]
-    sta_array /= spike_in_frames.sum()
+    if sta_array.any():
+        sta_array /= spike_in_frames.sum()
+
     return sta_array
+
 
 def multi_sta(timestamps, bins_stim, pre_frame=30, post_frame=0):
     """Compute the Spike Triggered Average for a cell.
@@ -136,8 +145,10 @@ def multi_sta(timestamps, bins_stim, pre_frame=30, post_frame=0):
         start_frame = kframe+1-pre_frame
         end_frame = kframe+1+post_frame
         sta_array += nspikes*stim_matrix[start_frame:end_frame, :, :]
-    sta_array /= spike_in_frames.sum()
+    if sta_array.any():
+        sta_array /= spike_in_frames.sum()
     return (unit_name, sta_array)
+
 
 # A global dictionary storing the variables passed from the initializer.
 GLOBAL_STIM = {}
@@ -145,7 +156,9 @@ def init_multi_sta(stim, stim_shape):
     GLOBAL_STIM['stim'] = stim
     GLOBAL_STIM['stim_shape'] = stim_shape
 
-def run_multi_sta(stim_file, bins_stim, spiketimes, pre_frame=30, post_frame=0):
+
+def run_multi_sta(stim_file, bins_stim, spiketimes, pre_frame=30,
+                  post_frame=0):
     """Run sta in multiprocessing.
 
     Parameter
@@ -160,26 +173,28 @@ def run_multi_sta(stim_file, bins_stim, spiketimes, pre_frame=30, post_frame=0):
     freeze_support()
     stim, stim_shape = load_stim_multi(stim_file)
 
-    pool = Pool(processes=cpu_count(), initializer=init_multi_sta,
-                initargs=(stim, stim_shape))
-    wrap_sta = partial(multi_sta, bins_stim=bins_stim, pre_frame=30,
-                       post_frame=0)
-    result = pool.map(wrap_sta, spiketimes)
+    wrap_sta = partial(multi_sta, bins_stim=bins_stim, pre_frame=pre_frame,
+                       post_frame=post_frame)
+    with Pool(processes=cpu_count(), initializer=init_multi_sta,
+              initargs=(stim, stim_shape)) as pool:
+        result = pool.map(wrap_sta, spiketimes)
     return result
+
 
 def plot_sta(sta_array, name=''):
     nframes = sta_array.shape[0]
     ncol = 6
-    nrow = nframes/ncol+1 if nframes % ncol else nframes/ncol
+    nrow = nframes//ncol+1 if nframes % ncol else nframes//ncol
     max_c = (np.abs(sta_array)).max()
     fig, ax = plt.subplots(nrow, ncol,
-                           sharex=True, sharey=True, figsize=(6, nrow)
+                           sharex=True, sharey=True, figsize=(ncol*1.5, nrow*1.5)
                            )
     axf = ax.flatten()
     for kidx, kframe in enumerate(sta_array):
         img = axf[kidx].pcolor(kframe, vmin=-max_c, vmax=max_c, cmap='RdBu_r')
-        axf[kidx].set_title('frame {}'.format(nframes-kidx-1))
+        axf[kidx].set_title('frame {}'.format(nframes-kidx-1), fontsize=6)
         axf[kidx].set_aspect(1)
-    fig.colorbar(img, ax=ax, orientation='vertical', fraction=.01)
+    fig.colorbar(img, ax=ax, orientation='vertical', fraction=.01,
+                 label='Range of stimulu [-1,1]')
     fig.suptitle(name)
     return (fig, ax)
