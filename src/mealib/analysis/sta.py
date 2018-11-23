@@ -14,40 +14,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# def load_stim(stimMini):
-#     if stimMini.lower().endswith('.mat'):
-#         try:
-#             import scipy.io as sio
-#             ensemble = sio.loadmat(stimMini)
-#             estimulos = ensemble['stim']
-#         except NotImplementedError:
-#             import h5py
-#             with h5py.File(stimMini, 'r') as hf:
-#                 estimulos = hf['stim'][...]
-#         except ValueError as verror:
-#             verror('There are problems with {} file'.format(stimMini))
-#         xSize, ySize, nchannels, lenEstimulos = estimulos.shape
-#         estim = np.zeros((xSize, ySize, lenEstimulos))
-#         for ke in range(lenEstimulos):
-#             rgb = estimulos[:, :, :, ke]
-#             gray = np.dot(rgb[..., :3], [0.299, 0.587, 0.144])
-#             estim[:, :, ke] = gray
-#         estim = np.asarray(estim)
-#     elif stimMini.lower().endswith('.hdf5'):
-#         # import h5py
-#         with h5py.File(stimMini, 'r') as hf:
-#             estimulos = hf['checkerboard'][...]
-#             lenEstimulos, xSize, ySize, nchannels = estimulos.shape
-#             estim = np.zeros((lenEstimulos, ySize, xSize))
-#             estim = hf['checkerboard'][..., 1]
-#     elif stimMini.lower().endswith('.np'):
-#         estim = np.load(stimMatrix)
-#     else:
-#         raise ValueError('It necesary load a stim File')
-#     return estim
-
-
-def load_stim_hdf5(fname, norm=True, channel='g'):
     rgb = {'r': 0, 'g': 1, 'b': 2}
     with h5py.File(fname, 'r') as hdf_file:
         len_stim, ysize, xsize, nchannels = hdf_file['checkerboard'].shape
@@ -74,12 +40,7 @@ def load_stim_multi(fname, norm=True, channel='g'):
     return stim, stim_shape
 
 
-def load_spk_txt():
-    pass
 
-
-def load_spk_hdf5():
-    pass
 
 
 def get_times_for_sta(timestamps, start_sync, end_sync):
