@@ -14,6 +14,106 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def ste(time_stim, stim, spikes, nsamples_before=30, nsamples_after=0):
+    """
+    Get all windows of stimulis triggered by a spike.
+
+    This function create a iterator to get a set of stimulus for a
+    spike.
+
+    Parameters
+    ----------
+    time_stim : ndarray
+        The time array corresponding to the start of each frame in
+        the stimulus.
+
+    stimulus : ndarray
+        A spatiotemporal or temporal stimulus array, where time is the
+        first dimension.
+
+    spikes : ndarray
+        A list or ndarray of spike times.
+
+    nsamples_before : int
+        Number of samples to include in the STE before the spike.
+
+    nsamples_after : int defaults: 0
+        Number of samples to include in the STE after the spike.
+
+    Returns
+    -------
+    ste : generator
+        A generator that yields samples from the spike-triggered ensemble.
+
+    Notes
+    -----
+    The spike-triggered ensemble (STE) is the set of all stimuli immediately
+    surrounding a spike. If the full stimulus distribution is p(s), the STE
+    is p(s | spike).
+
+    """
+    # assert stim.shape[0] == time_stim.size[0]+1, 'time _stim must has len(stim)+1'
+    nbefore, nafter = nsamples_before, nsamples_after
+    len_stim = stim.shape[0]
+    # Number of spikes in each frame of the stimulus
+    (nspks_in_frames, _) = np.histogram(spikes, bins=time_stim)
+
+    valid_frames = np.where(nspks_in_frames > 0)[0]
+    filter_valid_fame = (valid_frames >= nbefore) & \
+                        (valid_frames < len_stim - nafter)
+    valid_frames = valid_frames[filter_valid_fame]
+    spike_in_frames = nspks_in_frames[valid_frames]
+
+    # Valid frames consider itself as reference
+    for kfr, nspks in zip(valid_frames, spike_in_frames):
+        yield nspks*stim[kfr+1-nbefore:kfr+1+nafter, :, :].astype('float64')
+
+
+def sta(time_stim, stim, spikes, nsamples_before=30, nsamples_after=0):
+    """
+    Compute a spike-triggered average.
+
+    Parameters
+    ----------
+    time_stim : ndarray
+        The time array corresponding to the start of each frame in
+        the stimulus.
+
+    stimulus : ndarray
+        A spatiotemporal or temporal stimulus array, where time is the
+        first dimension.
+
+    spikes : ndarray
+        A list or ndarray of spike times
+
+    nsamples_before : int
+        Number of samples to include in the STA before the spike
+
+    nsamples_after : int
+        Number of samples to include in the STA after the spike (default: 0)
+
+    Returns
+    -------
+    sta : ndarray
+        The spatiotemporal spike-triggered average.
+
+    References
+    ----------
+    A simple white noise analysis of neuronal light responses.
+    E J Chichilnisky
+    """
+    nframe_stim, ysize, xsize = stim.shape
+    sta_array = np.zeros((nsamples_before+nsamples_after, ysize, xsize))
+
+    ste_it = ste(time_stim, stim, spikes, nsamples_before, nsamples_after)
+    for kwindow_stim in ste_it:
+        sta_array += kwindow_stim
+    if sta_array.any():
+        sta_array /= float(spikes.size)
+    return sta_array
+
+
+def load_stim(fname, norm=True, channel='g', stype='hdf5'):
     rgb = {'r': 0, 'g': 1, 'b': 2}
     with h5py.File(fname, 'r') as hdf_file:
         len_stim, ysize, xsize, nchannels = hdf_file['checkerboard'].shape
