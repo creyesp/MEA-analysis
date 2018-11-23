@@ -14,8 +14,10 @@ sorting_file = source_folder+'sorting/MR-0181/MR-0181.result.hdf5'
 sync_file = source_folder+'sync/MR-0181/event_list/244.txt'
 
 # Parameters
-pre_frame=30
-post_frame=0
+nsamples_before=30
+nsamples_after=0
+fps = 59.75789
+step = (np.arange(-nsamples_before, nsamples_after)+1)/fps
 
 # Sync
 sync_times = np.loadtxt(sync_file).T
@@ -37,7 +39,7 @@ fspiketimes.close()
 
 
 result = sta.run_multi_sta(stim_file, bins_stim, spiketimes,
-                           pre_frame=pre_frame, post_frame=post_frame)
+                           pre_frame=nsamples_before, post_frame=nsamples_after)
 print('Results (pool):\n', len(result))
 
 
