@@ -42,15 +42,16 @@ print('Results (pool):\n', len(result))
 
 
 if SAVA_FILE:
-	import h5py 
-	filename = 'STAs_'+exp_name+'.hdf5'
-	hdf_file = h5py.File(filename, 'a')
+    import h5py
+    filename = 'STAs_'+exp_name+'.hdf5'
+    with h5py.File(filename, 'a') as hdf_file:
+	    group_name = '/STA/'+intensity
+	    for (key, ksta) in result:
+	        unit_name = group_name+'/{}'.format(key)
+	        hdf_file.create_dataset(unit_name, data=ksta, dtype=np.float, compression="gzip")
+	    hdf_file[group_name].attrs['fps'] = fps
+	    hdf_file[group_name].attrs['nsamples_before'] = nsamples_before
+	    hdf_file[group_name].attrs['nsamples_after'] = nsamples_after
+	    hdf_file[group_name].attrs['nsamples'] = nsamples_before+nsamples_after
+	    hdf_file[group_name].attrs['time'] = (np.arange(-nsamples_before, nsamples_after)+1)/fps
 
-	group_name = '/STA/'+intensity
-	for (key, ksta) in result:
-		unit_name = group_name+'/{}'.format(key)
-		hdf_file.create_dataset(unit_name, data=ksta, dtype=np.float, compression="gzip")
-	hdf_file[group_name].attrs['pre_frame'] = pre_frame
-	hdf_file[group_name].attrs['post_frame'] = post_frame
-	hdf_file.flush()
-	hdf_file.close()
