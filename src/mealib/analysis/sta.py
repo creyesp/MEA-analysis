@@ -248,7 +248,8 @@ def plot_sta(sta_array, name=''):
     nrow = nframes//ncol+1 if nframes % ncol else nframes//ncol
     max_c = (np.abs(sta_array)).max()
     fig, ax = plt.subplots(nrow, ncol,
-                           sharex=True, sharey=True, figsize=(ncol*1.5, nrow*1.5)
+                           sharex=True, sharey=True,
+                           figsize=(ncol*1.5, nrow*1.5),
                            )
     axf = ax.flatten()
     for kidx, kframe in enumerate(sta_array):
