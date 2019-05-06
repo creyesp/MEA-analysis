@@ -1,0 +1,1 @@
+This folder log file from Sampling Interface
