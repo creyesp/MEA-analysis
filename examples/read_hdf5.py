@@ -27,21 +27,23 @@ a np.narray you should use ellipsis dataset[...]
 import h5py
 
 
-file_path = 'data/example.result.hdf5'
+file_path = 'data/example.results.hdf5'
 
 # Context manager
 with h5py.File(file_path) as sorting_file:
     # Print all groups and dataset on root group
-    print([key for key in sorting_file])
+    print('Groups and datasets in root group: \n\t',
+          [key for key in sorting_file], '\n')
 
     # Print all groups and dataset on spiketmes groups
     spk_group = '/spiketimes/'
-    print([key for key in sorting_file[spk_group]])
+    print('Groups and dataset in spiketimes subgroup: \n\t',
+          [key for key in sorting_file[spk_group]], '\n')
 
     # Retrive first 10 spiketimes
     first_10 = sorting_file[spk_group+'temp_0'][:10]
-    print(first_10)
+    print('Fist 10 values from dataset temp_0: \n\t', first_10, '\n')
 
     # Retrive all spiketimes
     all_spkts = sorting_file[spk_group+'temp_0'][...]
-    print(all_spkts)
+    print('All spikes in dataset temp_0: \n\t', all_spkts, '\n')
