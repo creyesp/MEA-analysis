@@ -28,29 +28,31 @@ a np.narray you should use ellipsis dataset[...]
 import h5py
 
 
-file_path = 'data/example.results.hdf5'
+if __name__ == '__main__':
 
-# Context manager
-with h5py.File(file_path) as sorting_file:
-    # Print all groups and dataset on root group
-    print('Groups and datasets in root group: \n\t',
-      [key for key in sorting_file], '\n')
+   file_path = 'data/example.results.hdf5'
 
-    # Print all groups and dataset on spiketmes groups
-    spk_group = '/spiketimes/'
-    print('Groups and dataset in spiketimes subgroup: \n\t',
-          [key for key in sorting_file[spk_group]], '\n')
+   # Context manager
+   with h5py.File(file_path) as sorting_file:
+       # Print all groups and dataset on root group
+       print('Groups and datasets in root group: \n\t',
+         [key for key in sorting_file], '\n')
 
-    # Print all attributes of spiketmes groups
-    dur_ds = '/duration'
-    print('Attributes in duration dataset: \n\t',
-          ['{}: {}'.format(key, value)
-           for key, value in sorting_file[dur_ds].attrs.items()], '\n')
+       # Print all groups and dataset on spiketmes groups
+       spk_group = '/spiketimes/'
+       print('Groups and dataset in spiketimes subgroup: \n\t',
+             [key for key in sorting_file[spk_group]], '\n')
 
-    # Retrive first 10 spiketimes
-    first_10 = sorting_file[spk_group+'temp_0'][:10]
-    print('Fist 10 values from dataset temp_0: \n\t', first_10, '\n')
+       # Print all attributes of spiketmes groups
+       dur_ds = '/duration'
+       print('Attributes in duration dataset: \n\t',
+             ['{}: {}'.format(key, value)
+              for key, value in sorting_file[dur_ds].attrs.items()], '\n')
 
-    # Retrive all spiketimes
-    all_spkts = sorting_file[spk_group+'temp_0'][...]
-    print('All spikes in dataset temp_0: \n\t', all_spkts, '\n')
+       # Retrive first 10 spiketimes
+       first_10 = sorting_file[spk_group+'temp_0'][:10]
+       print('Fist 10 values from dataset temp_0: \n\t', first_10, '\n')
+
+       # Retrive all spiketimes
+       all_spkts = sorting_file[spk_group+'temp_0'][...]
+       print('All spikes in dataset temp_0: \n\t', all_spkts, '\n')
