@@ -36,9 +36,11 @@ $ cp nsMCDLibrary/* ~/.neuroshare/
 ```
 
 For Windows:
-```batch
-unzip nsMCDLibrary_3.7b.zip
-copy nsMCDLibrary_3.7b\Matlab\Matlab-Import-Filter\Matlab_Interface\nsMCDLibrary64.dll path_Anaconda3\envs\spklib2\DLLs\nsMCDLibrary.dll
+```
+1) UNCOMPRESS nsMCDLibrary_3.7b.zip file 
+2) COPY nsMCDLibrary_3.7b\Matlab\Matlab-Import-Filter\Matlab_Interface\nsMCDLibrary64.dll
+3) PASTE TO path\Anaconda3\envs\spklib2\DLLs\nsMCDLibrary64.dll
+4) RENAME nsMCDLibrary64.dll TO nsMCDLibrary.dll 
 ```
 
 ## Activate nb extensions
