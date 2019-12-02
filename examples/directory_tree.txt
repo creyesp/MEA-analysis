@@ -1,0 +1,126 @@
+.
+├── config.ini
+├── data
+│   ├── 0088.jpg
+│   ├── log
+│   │   ├── Exp__2014_08_20-11.27.22
+│   │   │   └── SI Log file 2014_08_20-11.27.56.txt
+│   │   ├── Exp__2014_08_20-11.46.57
+│   │   │   ├── FirstImages_2.mat
+│   │   │   ├── Seed_2.mat
+│   │   │   └── SI Log file 2014_08_20-12.17.14.txt
+│   │   ├── Exp__2014_08_20-12.17.33
+│   │   │   └── SI Log file 2014_08_20-12.27.06.txt
+│   │   ├── Exp__2014_08_20-12.27.29
+│   │   │   └── SI Log file 2014_08_20-12.28.05.txt
+│   │   ├── Exp__2014_08_20-12.28.09
+│   │   │   └── SI Log file 2014_08_20-12.28.41.txt
+│   │   ├── Exp__2014_08_20-12.28.47
+│   │   │   └── SI Log file 2014_08_20-12.29.19.txt
+│   │   ├── Exp__2014_08_20-12.29.23
+│   │   │   └── SI Log file 2014_08_20-12.29.55.txt
+│   │   ├── Exp__2014_08_20-12.29.60
+│   │   │   └── SI Log file 2014_08_20-12.30.32.txt
+│   │   ├── Exp__2014_08_20-12.31.41
+│   │   │   └── SI Log file 2014_08_20-12.41.28.txt
+│   │   ├── Exp__2014_08_20-12.41.42
+│   │   │   └── SI Log file 2014_08_20-12.48.02.txt
+│   │   ├── Exp__2014_08_20-12.48.31
+│   │   │   └── SI Log file 2014_08_20-12.54.56.txt
+│   │   ├── Exp__2014_08_20-14.55.17
+│   │   │   ├── FirstImages_2.mat
+│   │   │   ├── Seed_2.mat
+│   │   │   └── SI Log file 2014_08_20-15.25.53.txt
+│   │   ├── Exp__2014_08_20-15.26.27
+│   │   │   └── SI Log file 2014_08_20-15.37.42.txt
+│   │   ├── Exp__2014_08_20-15.39.11
+│   │   │   └── SI Log file 2014_08_20-15.40.26.txt
+│   │   ├── Exp__2014_08_20-15.41.12
+│   │   │   └── SI Log file 2014_08_20-15.42.04.txt
+│   │   ├── Exp__2014_08_20-15.42.18
+│   │   │   └── SI Log file 2014_08_20-15.42.54.txt
+│   │   ├── Exp__2014_08_20-15.43.09
+│   │   │   └── SI Log file 2014_08_20-15.43.47.txt
+│   │   ├── Exp__2014_08_20-15.44.03
+│   │   │   └── SI Log file 2014_08_20-15.44.47.txt
+│   │   ├── Exp__2014_08_20-15.45.16
+│   │   │   └── SI Log file 2014_08_20-15.55.01.txt
+│   │   ├── Exp__2014_08_20-15.56.02
+│   │   │   └── SI Log file 2014_08_20-16.02.27.txt
+│   │   └── Exp__2014_08_20-16.03.09
+│   │       └── SI Log file 2014_08_20-16.09.41.txt
+│   ├── processed_protocols
+│   │   └── MR-0061_oldcircus_analysis_of_protocols.hdf5
+│   ├── raw
+│   │   └── MR-0061_analog.mcd
+│   ├── sorting
+│   │   └── MR-0061.result.hdf5
+│   ├── stim
+│   │   └── wn
+│   │       ├── stim_mini_MR-0061.hdf5
+│   │       └── stim_mini_MR-0061_.mat
+│   └── sync
+│       └── MR-0061
+│           ├── checkerboard.txt
+│           ├── event_list
+│           │   ├── 000.txt
+│           │   ├── 001.txt
+│           │   ├── 002.txt
+│           │   ├── 003.txt
+│           │   ├── 004.txt
+│           │   ├── 005.txt
+│           ├── event_list_MR-0061_.csv
+│           ├── event_list_MR-0061.csv
+│           ├── repeated_frames_MR-0061.txt
+│           ├── start_end_frames_MR-0061.txt
+│           └── total_duration_MR-0061.txt
+├── notebooks
+│   ├── flash
+│   │   ├── 01 - EDA_flash_features.ipynb
+│   │   ├── 02 - PRO_fit-and-get-features-from-flash-response.ipynb
+│   │   ├── 03 - VIS_flash_features.ipynb
+│   │   ├── 04 - VIS_flash_response.ipynb
+│   │   └── flash.py
+│   ├── sorting
+│   │   ├── 01 - EDA_sorting_general-view.ipynb
+│   │   └── sorting.py
+│   ├── sta
+│   │   ├── 01 - UTIL_sta_Convert-checkerboard-stim.ipynb
+│   │   ├── 03 - PRE_sta_fit-temporal-integration.ipynb
+│   │   ├── 04 - PRE_sta_check-fitting-temporal-integration.ipynb
+│   │   ├── 05 - PRO_sta_features-of-temporal-integracion.ipynb
+│   │   ├── 06 - VIS_sta_features.ipynb
+│   │   ├── 06 - VIS_sta_maps-and-temporal-integration.ipynb
+│   │   ├── 06 - VIS_sta_RF_bokeh.ipynb
+│   │   ├── 06 - VIS_sta_RF_fitting.ipynb
+│   │   ├── fit_gauss_2d.ipynb
+│   │   └── UTIL_convert-processed-protocols-to-hdf5.ipynb
+│   └── UTIL_sync_get-sync-file.ipynb
+├── reports
+│   ├── fig
+│   │   ├── flash
+│   │   │   ├── MR-0061_boxenplot_frmax_on_frmax_off_oldcircus.png
+│   │   │   ├── MR-0061_boxenplot_latency_on_latency_off_oldcircus.png
+│   │   │   ├── MR-0061_boxenplot_sust_index_on_sust_index_off_oldcircus.png
+│   │   │   ├── MR-0061_colormap_latencies__oldcircus.png
+│   │   │   ├── MR-0061_histograms_255_vs_200-150-100-50_nd3__oldcircus__oldcircus.png
+│   │   │   ├── MR-0061_nd3_relation_On-Off_features_oldcircus.png
+│   │   │   ├── MR-0061_nd3_response__oldcircus.png
+│   │   │   └── MR-0061_relation_255_vs_200-150-100-50_nd3__oldcircus.png
+│   │   ├── sorting_features
+│   │   │   ├── clustermap_MR-0061.png
+│   │   │   ├── histogram_MR-0061.png
+│   │   │   └── rasterplot_MR-0061.png
+│   │   └── sta
+│   │       ├── fit
+│   │       │   ├── 0.png
+│   │       └── nd3-255
+│   │           ├── temp_0.png
+│   └── spreadsheets
+└── script
+    ├── remove_spk_with_small_isi.py
+    ├── sta_plot_4i.py
+    ├── sta_plot.py
+    ├── sta.py
+    ├── sync_batch.py
+    └── sync.py

@@ -5,23 +5,16 @@ Anaconda https://www.anaconda.com/distribution/
 For windows download and install Visual c++ https://visualstudio.microsoft.com/downloads/
 
 ## Create environments and install packages
-Its necesary create 2 virtual enviroment with conda because the module to read mcs files
-only work on python2.7, for other things use python3. In the future all modules
-going to work on python3.
+A good practice is creates a virtual enviroment with conda (or virtualenv) because create a isolated python environment.
 
 ```batch
 $ conda install nb_conda nb_conda_kernels ipywidgets widgetsnbextension
-$ conda create -n spklib3 python=3.6
-$ conda activate spklib3 # if you have problems with it, try windows: activate spklib3 linux: source activate spklib3
+$ conda create -n spklib python=3.6
+$ conda activate spklib # if you have problems with it, try windows: activate spklib3 linux: source activate spklib3
 $ conda install ipykernel
 $ conda install seaborn scipy scikit-learn pandas numpy matplotlib bokeh h5py statsmodels
 $ pip install spikelib PeakUtils lmfit
-
-$ conda create -n spklib2 python=2.7
-$ conda activate spklib2
-$ conda install ipykernel
-$ conda install seaborn scipy scikit-learn pandas numpy matplotlib bokeh h5py statsmodels
-$ pip install numpy PeakUtils neuroshare lmfit spikelib
+$ pip install -e git+https://github.com/G-Node/python-neuroshare.git#egg=neuroshare
 ```
 
 ## Download external library to load mcd files
@@ -39,7 +32,7 @@ For Windows:
 ```
 1) UNCOMPRESS nsMCDLibrary_3.7b.zip file 
 2) COPY nsMCDLibrary_3.7b\Matlab\Matlab-Import-Filter\Matlab_Interface\nsMCDLibrary64.dll
-3) PASTE TO path\Anaconda3\envs\spklib2\DLLs\nsMCDLibrary64.dll
+3) PASTE TO your_path\Anaconda3\envs\spklib\DLLs\nsMCDLibrary64.dll
 4) RENAME nsMCDLibrary64.dll TO nsMCDLibrary.dll 
 ```
 

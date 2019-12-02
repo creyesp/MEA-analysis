@@ -3,19 +3,19 @@ import h5py
 import numpy as np
 
 sr=20000
-thr = 0.0005*sr
+thr = 0.00075*sr
 
-src_file = '../data/sorting/MR-0092t2.result-1_bkp.hdf5'
-dst_file = '../data/sorting/MR-0092t2.result-1_bkp_modified.hdf5'
+src_file = '../data/sorting/MR-0117.result.hdf5'
+dst_file = '../data/sorting/MR-0117.result_modified.hdf5'
 
 with h5py.File(src_file, 'r') as f_src, h5py.File(dst_file, 'w') as f_dst :
     f_dst.create_group('/spiketimes/')
     f_dst.create_group('/amplitudes/')
     f_dst.create_group('/info/')
     for key in f_src['spiketimes/']:
-        spk = f_src['spiketimes/'+key][...]
+        spk = f_src['spiketimes/'+key][...].flatten()
         amp = f_src['amplitudes/'+key][...]
-        duplicates = np.where(np.diff(spk[:,0]) < thr)[0]
+        duplicates = np.where(np.diff(spk) < thr)[0]
         min_amp = np.where(
             amp[duplicates,0] < amp[duplicates+1,0],
             duplicates,

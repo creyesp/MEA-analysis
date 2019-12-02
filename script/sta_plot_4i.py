@@ -1,10 +1,11 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
+from configparser import ConfigParser, ExtendedInterpolation
+from multiprocessing import cpu_count
+from multiprocessing import Pool
 
 import h5py
-from multiprocessing import Pool
-from multiprocessing import cpu_count
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
+import numpy as np
 
 from spikelib.visualizations import plot_sta
 from spikelib.utils import check_directory
@@ -39,11 +40,12 @@ def plotsta_multi(sta_data):
             kcol.add_patch(pellipse)
     for kax in ax.flatten():
         kax.set(xlim=(0,31), ylim=(0,31))
-    plt.savefig(outputfolder+key+'.png')
+    plt.savefig('../fig/sta/check/'+key+'.png')
     plt.close()
 
+
 def run_plot(input_file):
-    outputfolder = u'../fig/sta/check_modified/'
+    outputfolder = u'../fig/sta/check/'
     check_directory(outputfolder)
 
     data = []
@@ -65,11 +67,16 @@ def run_plot(input_file):
 
     pool = Pool(processes=cpu_count())
     pool.map(plotsta_multi, data)
-    # plotsta_multi(data[0])
+
 
 if __name__ == '__main__':
 
-    exp_name = 'MR-0092t2'
-    input_file = '../data/{}_modified_analysis_of_protocols_150um_merge.hdf5'.format(exp_name)
+
+    config = ConfigParser(interpolation=ExtendedInterpolation())
+    config.read('../config.ini')
+    
+    exp_name = config['EXP']['name']
+    input_file = config['FILES']['processed']
+    output_folder = config['REPORT']['sta']
 
     run_plot(input_file)
