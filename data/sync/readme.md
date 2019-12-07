@@ -1,1 +1,0 @@
-This folder contain the output of Sync files with times of each frame
