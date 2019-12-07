@@ -1,24 +1,30 @@
+"""Script to generate a set of sync files for a list of experiments
+
+exps variable is a dictionary with the name of experiment as key and the
+mcd channel as a value which contain the analog signal.
+"""
 from spikelib.utils import check_directory
 from spikelib.preprocessing import Sync
 
 if __name__ == '__main__':
 
-    exp = {'MR-0092t2': 0}
+    exps = {
+        'MR-0000': 0, }
     real_fps = 59.75816
-    
-    for kexp in exp:
-        source_folder = 'exp/MEA-analysis/data/raw_data/'+kexp+'/'+kexp+'_analog.mcd'
-        output_folder = 'exp/MEA-analysis/data/sync/'+kexp+'/'
-        output_folder_event = 'exp/MEA-analysis/data/sync/'+kexp+'/event_list/'
-        mcd_channel = exp[kexp]
+
+    base_path = 'exp/MEA-analysis/data/'
+    for exp, channel in exps.items():
+        source_folder = '{}raw/{}/{}_analog.mcd'.format(base_path, exp, exp)
+        output_folder = '{}sync/{}/'.format(base_path, exp)
+        output_folder_event = '{}sync/{}/event_list/'.format(base_path, exp)
         check_directory(output_folder)
         check_directory(output_folder_event)
 
-        print('\n'+kexp)
-        sync_data = Sync(kexp, real_fps)
+        print('\n' + exp)
+        sync_data = Sync(exp, real_fps)
         sync_data.read_mcd(source_folder)
         sync_data.show_entities()
-        sync_data.analyzer(mcd_channel)
+        sync_data.analyzer(channel)
 
         sync_data.create_events()
         sync_data.add_repeated()
