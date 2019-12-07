@@ -12,18 +12,11 @@ adding
 ehthumbs.db
 Thumbs.db
 
-# data raw
-data/raw_data/*
-data/stim/*
-data/structured_data/*
-data/sync/*
-data/sorting/*
+# pycharm
+.idea
 
 # pyc
 *.pyc
 
 #checkpoints
 *.ipynb_checkpoints*
-
-# mealib3
-src/mealib3/*
