@@ -1,0 +1,21 @@
+name: spklib2
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pip
+  - ipykernel
+  - numpy==1.17.1
+  - seaborn==0.9.0
+  - scipy==1.3.1
+  - scikit-learn==0.21.3
+  - pandas==0.25.1
+  - matplotlib==3.1.1
+  - bokeh
+  - h5py==2.9.0
+  - statsmodels
+  - pip:
+    - lmfit==0.9.14
+    - peakutils==1.3.2
+    - spikelib
+    - "--editable=git+https://github.com/G-Node/python-neuroshare.git#egg=neuroshare"
