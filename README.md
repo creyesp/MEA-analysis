@@ -5,20 +5,16 @@ Anaconda https://www.anaconda.com/distribution/
 For windows download and install Visual c++ https://visualstudio.microsoft.com/downloads/
 
 ## Create environments and install packages
-A good practice is creates a virtual enviroment with conda (or virtualenv) because create a isolated python environment.
+A good practice is creates a virtual environment with conda (or virtualenv) because create a isolated python environment.
 
 ```batch
 $ conda install nb_conda nb_conda_kernels ipywidgets widgetsnbextension
-$ conda create -n spklib python=3.6
-$ conda activate spklib # if you have problems with it, try windows: activate spklib3 linux: source activate spklib3
-$ conda install ipykernel
-$ conda install seaborn scipy scikit-learn pandas numpy matplotlib bokeh h5py statsmodels
-$ pip install spikelib PeakUtils lmfit
-$ pip install -e git+https://github.com/G-Node/python-neuroshare.git#egg=neuroshare
+$ conda env create -f environment.yml
+$ conda activate spklib # if you have problems with it, try windows: activate spklib linux: source activate spklib
 ```
 
 ## Download external library to load mcd files
-To read mcd files spikelib package use neuroshare package to do it. So you need download the correct .dll (windows) or .so (linix) file. For more details about neuroshare see https://pythonhosted.org/neuroshare/
+To read mcd files spikelib package use neuroshare package to do it. So you need download the correct .dll (windows) or .so (linux) file. For more details about neuroshare see https://pythonhosted.org/neuroshare/
 
 Download neuroshare lib from https://www.multichannelsystems.com/software/neuroshare-library
 
@@ -36,7 +32,7 @@ For Windows:
 4) RENAME nsMCDLibrary64.dll TO nsMCDLibrary.dll 
 ```
 
-## Activate nb extensions
+## Activate nb extensions (optional)
 - Table of Contents
 - Variable inspector
 - Notify
