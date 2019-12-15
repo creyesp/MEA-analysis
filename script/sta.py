@@ -20,10 +20,10 @@ if __name__ == '__main__':
     output_file = config['FILES']['processed']
 
     # Parameters
-    nsamples_before = int(config['CHECKERBOAR']['nsamples_before'])
-    nsamples_after = int(config['CHECKERBOAR']['nsamples_after'])
-    fps = float(config['CHECKERBOAR']['fps'])
-    protocol_name = config['CHECKERBOAR']['protocol_name']
+    nsamples_before = int(config['CHECKERBOARD']['nsamples_before'])
+    nsamples_after = int(config['CHECKERBOARD']['nsamples_after'])
+    fps = float(config['CHECKERBOARD']['fps'])
+    protocol_name = config['CHECKERBOARD']['protocol_name']
     step = (np.arange(-nsamples_before, nsamples_after) + 1) / fps
 
     frametimes = np.loadtxt(frametime_file).T
