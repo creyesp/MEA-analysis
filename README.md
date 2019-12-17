@@ -1,6 +1,6 @@
 # Install
 ## Prerequisits
-Anaconda https://www.anaconda.com/distribution/    
+Python 3.5+ or [Anaconda3](https://www.anaconda.com/distribution/)    
 
 For windows download and install Visual c++ https://visualstudio.microsoft.com/downloads/
 
@@ -11,6 +11,13 @@ A good practice is creates a virtual environment with conda (or virtualenv) beca
 $ conda install nb_conda nb_conda_kernels ipywidgets widgetsnbextension
 $ conda env create -f environment.yml
 $ conda activate spklib # if you have problems with it, try windows: activate spklib linux: source activate spklib
+```
+or use virtualenv
+```buildoutcfg
+$ virtualenv --python=python3.7 venv
+$ source venv/bin/activate
+$ pip install -r requirements.txt
+$ pip install -r requirements_git.txt
 ```
 
 ## Download external library to load mcd files

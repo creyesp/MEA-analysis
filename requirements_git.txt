@@ -1,0 +1,2 @@
+--editable=git+https://github.com/G-Node/python-neuroshare.git#egg=neuroshare
+--editable=git+https://github.com/creyesp/spikelib.git#egg=spikelib
