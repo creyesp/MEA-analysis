@@ -16,11 +16,11 @@ def plotsta_multi(sta_data):
     sta_array = sta_data[1]
     outputfolder = sta_data[2]
     fig, ax = plot_sta(sta_array, key)
-    fig.savefig('{}{}.png'.format(outputfolder, key))
+    fig.savefig(os.path.join(outputfolder, key + '.png'))
     plt.close()
 
 def run_plot(input_file, output_folder, ksuffix):
-    outputfolder = os.path.join(output_folder, ksuffix)
+    outputfolder = os.path.join(output_folder, 'raw', ksuffix)
     #u'{}/fig/{}/'.format(output_folder, ksuffix)
     check_directory(outputfolder)
 
@@ -49,4 +49,4 @@ if __name__ == '__main__':
         protocols = list(pfile['/sta'].keys())
 
     for ksuffix in protocols:
-        run_plot(input_file, output_folder, ksuffix)
+        run_plot(processed_file, output_folder, ksuffix)
