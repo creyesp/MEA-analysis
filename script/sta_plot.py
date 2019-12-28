@@ -1,6 +1,7 @@
 from configparser import ConfigParser, ExtendedInterpolation
 from multiprocessing import Pool
 from multiprocessing import cpu_count
+import os
 
 import h5py
 import numpy as np
@@ -19,7 +20,8 @@ def plotsta_multi(sta_data):
     plt.close()
 
 def run_plot(input_file, output_folder, ksuffix):
-    outputfolder = u'{}{}__/'.format(output_folder, ksuffix)
+    outputfolder = os.path.join(output_folder, ksuffix)
+    #u'{}/fig/{}/'.format(output_folder, ksuffix)
     check_directory(outputfolder)
 
     data = []
@@ -40,8 +42,11 @@ if __name__ == '__main__':
     config.read('../config.ini')
     
     exp_name = config['EXP']['name']
-    input_file = config['FILES']['processed']
+    processed_file = config['FILES']['processed']
     output_folder = config['REPORT']['sta']
 
-    for ksuffix in ['nd3-255',]:
+    with h5py.File(processed_file,'r') as pfile:
+        protocols = list(pfile['/sta'].keys())
+
+    for ksuffix in protocols:
         run_plot(input_file, output_folder, ksuffix)
