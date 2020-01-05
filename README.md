@@ -8,7 +8,6 @@ For windows download and install Visual c++ https://visualstudio.microsoft.com/d
 A good practice is creates a virtual environment with conda (or virtualenv) because create a isolated python environment.
 
 ```batch
-$ conda install nb_conda nb_conda_kernels ipywidgets widgetsnbextension
 $ conda env create -f conda_environment.yml
 $ conda activate spklib # if you have problems with it, try windows: activate spklib linux: source activate spklib
 ```
