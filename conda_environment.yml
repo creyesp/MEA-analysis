@@ -1,4 +1,4 @@
-name: spklib2
+name: spklib
 channels:
   - conda-forge
   - defaults
@@ -17,5 +17,5 @@ dependencies:
   - pip:
     - lmfit==0.9.14
     - peakutils==1.3.2
-    - spikelib==0.1.1
     - "--editable=git+https://github.com/G-Node/python-neuroshare.git#egg=neuroshare"
+    - "--editable=git+https://github.com/creyesp/spikelib.git#egg=spikelib"
